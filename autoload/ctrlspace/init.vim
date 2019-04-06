@@ -1,4 +1,4 @@
-" 
+"
 " Init ctrlspace called by plugin/ctrlspace.vim
 "
 
@@ -20,13 +20,9 @@ function! ctrlspace#init#Init()
     endif
 
     command! -nargs=* -range CtrlSpace :call ctrlspace#window#Toggle(0) | :call feedkeys(<q-args>)
-    command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#window#GoToBufferListPosition("up")
-    command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#window#GoToBufferListPosition("down")
     command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#tabs#NewTabLabel(0)
     command! -nargs=0 -range CtrlSpaceClearTabLabel :call ctrlspace#tabs#RemoveTabLabel(0)
-    command! -nargs=0 -range CtrlSpaceSaveWorkspace :call ctrlspace#workspaces#AddNewWorkspace()
     command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#workspaces#ClearWorkspace()
-    command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#workspaces#LoadWorkspaceFile(<bang>0, <q-args>)
     command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#roots#AddProjectRoot(<q-args>)
     command! -nargs=+ -complete=customlist,ctrlspace#roots#GetProjectRootCompletion CtrlSpaceRemoveProjectRoot :call ctrlspace#roots#RemoveProjectRoot(<f-args>)
 
@@ -46,14 +42,6 @@ function! ctrlspace#init#Init()
     au BufEnter * call ctrlspace#buffers#AddBuffer()
     au VimEnter * call ctrlspace#buffers#Init()
     au TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
-
-    if s:config.SaveWorkspaceOnExit
-        au VimLeavePre * if ctrlspace#workspaces#ActiveWorkspace().Status | call ctrlspace#workspaces#SaveWorkspaceFile("") | endif
-    endif
-
-    if s:config.LoadLastWorkspaceOnStart
-        au VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#workspaces#LoadWorkspaceFile(0, "") | endif
-    endif
 endfunction
 " }}}
 

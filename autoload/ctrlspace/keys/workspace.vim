@@ -4,13 +4,13 @@ let s:modes  = ctrlspace#modes#Modes()
 
 " FUNCTION: ctrlspace#keys#workspace#Init() {{{
 function! ctrlspace#keys#workspace#Init()
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Load"          , "Workspace" , ["CR"  , "Space", "Tab"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Load"          , "Workspace" , ["CR", "Space"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append"        , "Workspace" , ["t"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Add"           , "Workspace" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Save"          , "Workspace" , ["s"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete"        , "Workspace" , ["d"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename"        , "Workspace" , ["="   , "m"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Clear"         , "Workspace" , ["C"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename"        , "Workspace" , ["m"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Close"         , "Workspace" , ["C"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Sort"          , "Workspace" , ["g"])
 endfunction
 " }}}
@@ -23,7 +23,6 @@ endfunction
 
 " FUNCTION: s:loadWorkspace(bang, name) {{{
 function! s:loadWorkspace(bang, name)
-	let saveWorkspaceBefore = 0
 	let active = ctrlspace#workspaces#ActiveWorkspace()
 
 	if active.Status && !a:bang
@@ -32,11 +31,7 @@ function! s:loadWorkspace(bang, name)
 		if a:name ==# active.Name
 			let msg = "Reload current workspace: '" . a:name . "'?"
 		elseif active.Status == 2
-			if s:config.SaveWorkspaceOnSwitch
-				let saveWorkspaceBefore = 1
-			else
-				let msg = "Current workspace ('" . active.Name . "') not saved. Proceed anyway?"
-			endif
+            let msg = "Current workspace ('" . active.Name . "') not saved. Proceed anyway?"
 		endif
 
 		if !empty(msg) && !ctrlspace#ui#Confirmed(msg)
@@ -49,10 +44,6 @@ function! s:loadWorkspace(bang, name)
 	endif
 
 	call ctrlspace#window#Kill(0, 1)
-
-	if saveWorkspaceBefore && !ctrlspace#workspaces#SaveWorkspaceFile("")
-		return 0
-	endif
 
 	if !ctrlspace#workspaces#LoadWorkspaceFile(a:bang, a:name)
 		return 0
@@ -74,17 +65,14 @@ function! ctrlspace#keys#workspace#Load(k)
         return
     endif
 
-	if a:k ==# "Tab"
-		call ctrlspace#window#Toggle(0)
-		call ctrlspace#ui#DelayedMsg()
-    "elseif a:k ==# "CR"
-        " No need to open ctrlspace again when workspace was loaded.
-	elseif a:k ==# "Space"
+	if a:k ==# "Space"
 		call ctrlspace#window#Toggle(0)
 		call ctrlspace#window#Kill(0, 0)
 		call s:modes.Workspace.Enable()
 		call ctrlspace#window#Toggle(1)
 		call ctrlspace#ui#DelayedMsg()
+    "elseif a:k ==# "CR"
+        " No need to open ctrlspace again when workspace was loaded.
 	endif
 endfunction
 " }}}
@@ -173,13 +161,28 @@ function! ctrlspace#keys#workspace#Rename(k)
 endfunction
 " }}}
 
-" FUNCTION: ctrlspace#keys#workspace#Clear(k) {{{
+" FUNCTION: ctrlspace#keys#workspace#Close(k) {{{
 " Clear all buffers and tabs of one workspace
-function! ctrlspace#keys#workspace#Clear(k)
+function! ctrlspace#keys#workspace#Close(k)
 	if !ctrlspace#keys#buffer#NewWorkspace(a:k)
 		return
 	endif
 
+	let active = ctrlspace#workspaces#ActiveWorkspace()
+
+	if active.Status == 2
+		if !ctrlspace#ui#Confirmed("Current workspace ('" . active.Name . "') not saved. Proceed anyway?")
+			return
+		endif
+	endif
+
+	if !ctrlspace#ui#ProceedIfModified()
+		return
+	endif
+
+	call ctrlspace#window#Kill(0, 1)
+	call ctrlspace#workspaces#ClearWorkspace()
+	call ctrlspace#window#Toggle(0)
 	call ctrlspace#window#Kill(0, 0)
 	call s:modes.Workspace.Enable()
 	call ctrlspace#window#Toggle(1)

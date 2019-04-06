@@ -178,20 +178,3 @@ function! s:getSelectedDirectory()
 
 	return fnamemodify(name, ":h")
 endfunction
-
-function! ctrlspace#search#SearchParentDirectoryCycle()
-	let candidate = s:getSelectedDirectory()
-
-	if empty(candidate)
-		return 0
-	endif
-
-	if !s:modes.Search.HasData("LastSearchedDirectory") || s:modes.Search.Data.LastSearchedDirectory !=# candidate
-		call s:modes.Search.SetData("LastSearchedDirectory", candidate)
-	else
-		call s:modes.Search.SetData("LastSearchedDirectory", fnamemodify(s:modes.Search.Data.LastSearchedDirectory, ":h"))
-	endif
-
-	call ctrlspace#search#InsertSearchText(s:modes.Search.Data.LastSearchedDirectory)
-	return 1
-endfunction

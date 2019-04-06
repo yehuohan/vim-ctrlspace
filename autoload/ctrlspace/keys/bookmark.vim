@@ -3,7 +3,7 @@ let s:modes  = ctrlspace#modes#Modes()
 
 " FUNCTION: ctrlspace#keys#bookmark#Init() {{{
 function! ctrlspace#keys#bookmark#Init()
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#GoToBookmark" , "Bookmark" , ["Tab" , "CR"  , "Space"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#GoToBookmark" , "Bookmark" , ["CR"  , "Space"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Add"          , "Bookmark" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Delete"       , "Bookmark" , ["d"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Append"       , "Bookmark" , ["t", "s", "v"])
@@ -18,15 +18,13 @@ function! ctrlspace#keys#bookmark#GoToBookmark(k)
 	call ctrlspace#window#Kill(0, 1)
 	call ctrlspace#bookmarks#GoToBookmark(nr)
 
-	if a:k ==# "Tab"
-		call ctrlspace#window#Toggle(0)
-    "elseif a:k ==# "CR"
-        " No need to open ctrlspace again when bookmark file was opened
-	elseif a:k ==# "Space"
+	if a:k ==# "Space"
 		call ctrlspace#window#Toggle(0)
 		call ctrlspace#window#Kill(0, 0)
 		call s:modes.Bookmark.Enable()
 		call ctrlspace#window#Toggle(1)
+    "elseif a:k ==# "CR"
+        " No need to open ctrlspace again when bookmark file was opened
 	endif
 
 	call ctrlspace#ui#DelayedMsg()

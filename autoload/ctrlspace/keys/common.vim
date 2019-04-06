@@ -9,29 +9,13 @@ function! ctrlspace#keys#common#Init()
 	call s:map("Down",                         "j")
 	call s:map("Up",                           "k")
 	call s:map("Previous",                     "p")
-	call s:map("PreviousCR",                   "P")
 	call s:map("Next",                         "n")
-	call s:map("MouseDown",                    "MouseDown")
-	call s:map("MouseUp",                      "MouseUp")
-	call s:map("LeftRelease",                  "LeftRelease")
-	call s:map("LeftMouse2",                   '2-LeftMouse')
-	call s:map("DownArrow",                    "Down")
-	call s:map("UpArrow",                      "Up")
-	call s:map("Home",                         "Home")
 	call s:map("Top",                          "K")
-	call s:map("End",                          "End")
 	call s:map("Bottom",                       "J")
-	call s:map("PageDown",                     "PageDown")
-	call s:map("ScrollDown",                   'C-f')
-	call s:map("PageUp",                       "PageUp")
-	call s:map("ScrollUp",                     'C-b')
-	call s:map("HalfScrollDown",               'C-d')
-	call s:map("HalfScrollUp",                 'C-u')
-	call s:map("Close",                        "q", "Esc", 'C-c')
-	call s:map("Quit",                         "Q")
+	call s:map("HalfScrollDown",               'C-j')
+	call s:map("HalfScrollUp",                 'C-k')
+	call s:map("Close",                        "q", "Esc")
 	call s:map("EnterSearchMode",              "/")
-	call s:map("RestorePreviousSearch",        'C-p')
-	call s:map("RestoreNextSearch",            'C-n')
 	call s:map("BackOrClearSearch",            "BS")
 	call s:map("ToggleFileMode",               "o")
 	call s:map("ToggleFileModeAndSearch",      "O")
@@ -67,14 +51,6 @@ function! ctrlspace#keys#common#EnterSearchMode(k)
 	call ctrlspace#search#SwitchSearchMode(1)
 endfunction
 
-function! ctrlspace#keys#common#RestorePreviousSearch(k)
-	call ctrlspace#search#RestoreSearchLetters("previous")
-endfunction
-
-function! ctrlspace#keys#common#RestoreNextSearch(k)
-	call ctrlspace#search#RestoreSearchLetters("next")
-endfunction
-
 function! ctrlspace#keys#common#ToggleHelp(k)
 	call ctrlspace#window#Kill(0, 0)
 
@@ -99,90 +75,16 @@ function! ctrlspace#keys#common#Previous(k)
 	call ctrlspace#jumps#Jump("previous")
 endfunction
 
-function! ctrlspace#keys#common#PreviousCR(k)
-	call ctrlspace#jumps#Jump("previous")
-	call feedkeys("\<CR>")
-endfunction
-
 function! ctrlspace#keys#common#Next(k)
 	call ctrlspace#jumps#Jump("next")
-endfunction
-
-function! ctrlspace#keys#common#MouseUp(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("down")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#MouseDown(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("up")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#LeftRelease(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("mouse")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#LeftMouse2(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("mouse")
-		call feedkeys("\<CR>")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#DownArrow(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("down")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#UpArrow(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("up")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#Home(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar(1)
-	endif
 endfunction
 
 function! ctrlspace#keys#common#Top(k)
 	call ctrlspace#window#MoveSelectionBar(1)
 endfunction
 
-function! ctrlspace#keys#common#End(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar(line("$"))
-	endif
-endfunction
-
 function! ctrlspace#keys#common#Bottom(k)
 	call ctrlspace#window#MoveSelectionBar(line("$"))
-endfunction
-
-function! ctrlspace#keys#common#PageDown(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("pgdown")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#ScrollDown(k)
-	call ctrlspace#window#MoveSelectionBar("pgdown")
-endfunction
-
-function! ctrlspace#keys#common#PageUp(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-		call ctrlspace#window#MoveSelectionBar("pgup")
-	endif
-endfunction
-
-function! ctrlspace#keys#common#ScrollUp(k)
-	call ctrlspace#window#MoveSelectionBar("pgup")
 endfunction
 
 function! ctrlspace#keys#common#HalfScrollDown(k)
@@ -195,10 +97,6 @@ endfunction
 
 function! ctrlspace#keys#common#Close(k)
 	call ctrlspace#window#Kill(0, 1)
-endfunction
-
-function! ctrlspace#keys#common#Quit(k)
-	call ctrlspace#window#QuitVim()
 endfunction
 
 function! s:toggleListViewAndSearch(k, mode)
